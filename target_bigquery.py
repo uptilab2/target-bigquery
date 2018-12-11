@@ -203,6 +203,7 @@ def persist_lines_stream(config, lines=None):
             refresh_token=config["refresh_token"],
             client_id=config["client_id"],
             client_secret=config["client_secret"],
+            token_uri=config["token_uri"]
             )
 
     bigquery_client = bigquery.Client(project=project_id, credentials=credentials)
