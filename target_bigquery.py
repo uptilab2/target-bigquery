@@ -228,8 +228,7 @@ def persist_lines_stream(config, lines=None):
             schema = schemas[msg.stream]
 
             validate(msg.record, schema)
-
-            errors[msg.stream] = bigquery_client.create_rows(tables[msg.stream], [msg.record])
+            errors[msg.stream] = bigquery_client.insert_rows(tables[msg.stream], [msg.record])
             rows[msg.stream] += 1
 
             state = None
