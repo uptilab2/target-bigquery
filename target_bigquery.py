@@ -24,13 +24,6 @@ from google.cloud.bigquery import SchemaField
 from google.cloud.bigquery import LoadJobConfig
 from google.api_core import exceptions
 
-try:
-    parser = argparse.ArgumentParser(parents=[tools.argparser])
-    parser.add_argument('-c', '--config', help='Config file', required=True)
-    flags = parser.parse_args()
-
-except ImportError:
-    flags = None
 
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 logger = singer.get_logger()
@@ -271,6 +264,16 @@ def collect():
         logger.debug('Collection request failed')
 
 def main():
+
+    try:
+        parser = argparse.ArgumentParser(parents=[tools.argparser])
+        parser.add_argument('-c', '--config', help='Config file', required=True)
+        flags = parser.parse_args()
+
+    except ImportError:
+        flags = None
+
+
     with open(flags.config) as input:
         config = json.load(input)
 
