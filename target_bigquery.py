@@ -197,7 +197,15 @@ def persist_lines_stream(config, lines=None):
     rows = {}
     errors = {}
 
-    bigquery_client = bigquery.Client(project=project_id)
+    from google.oauth2.credentials import Credentials
+    credentials = Credentials(
+            token=config["token"],
+            refresh_token=config["refresh_token"],
+            client_id=config["client_id"],
+            client_secret=config["client_secret"],
+            )
+
+    bigquery_client = bigquery.Client(project=project_id, credentials=credentials)
 
     dataset_ref = bigquery_client.dataset(dataset_id)
     dataset = Dataset(dataset_ref)
