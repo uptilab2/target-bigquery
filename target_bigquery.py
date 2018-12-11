@@ -215,6 +215,7 @@ def persist_lines_stream(config, lines=None):
     except exceptions.Conflict:
         pass
 
+    records = {}
     for line in lines:
         try:
             msg = singer.parse_message(line)
@@ -229,7 +230,10 @@ def persist_lines_stream(config, lines=None):
             schema = schemas[msg.stream]
 
             validate(msg.record, schema)
-            errors[msg.stream] = bigquery_client.insert_rows(tables[msg.stream], [msg.record])
+            try:
+                records[msg.stream].append(msg.record)
+            except KeyError:
+                records[msg.stream] = [msg.record]
             rows[msg.stream] += 1
 
             state = None
@@ -256,6 +260,10 @@ def persist_lines_stream(config, lines=None):
 
         else:
             raise Exception("Unrecognized message {}".format(msg))
+
+    # flush all rows only once
+    for stream, _rows in records.items():
+        errors[stream] = bigquery_client.insert_rows(tables[stream], _rows)
 
     for table in errors.keys():
         if not errors[table]:
