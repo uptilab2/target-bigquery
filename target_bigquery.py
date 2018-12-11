@@ -186,7 +186,10 @@ def persist_lines_job(project_id, dataset_id, lines=None):
 
     return state
 
-def persist_lines_stream(project_id, dataset_id, lines=None):
+def persist_lines_stream(config, lines=None):
+    project_id = config["project_id"]
+    dataset_id = config["dataset_id"]
+
     state = None
     schemas = {}
     key_properties = {}
