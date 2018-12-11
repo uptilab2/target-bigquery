@@ -45,7 +45,9 @@ def clear_dict_hook(items):
     return {k: v if v is not None else '' for k, v in items}
 
 def define_schema(field, name):
-    schema_name = name
+    # FIXME : better string cleaning
+    schema_name = name.replace(" ", "_").replace(".", "_")
+
     schema_type = "STRING"
     schema_mode = "NULLABLE"
     schema_description = None
@@ -90,9 +92,14 @@ def define_schema(field, name):
     return (schema_name, schema_type, schema_mode, schema_description, schema_fields)
 
 def build_schema(schema):
+    import re
     SCHEMA = []
     for key in schema['properties'].keys():
+
         schema_name, schema_type, schema_mode, schema_description, schema_fields = define_schema(schema['properties'][key], key)
+        # TODO : what to do if name is invalid ?
+        if not re.match("[a-zA-Z0-9_]+", schema_name):
+            continue
         SCHEMA.append(SchemaField(schema_name, schema_type, schema_mode, schema_description, schema_fields))
 
     return SCHEMA
