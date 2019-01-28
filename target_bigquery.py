@@ -59,7 +59,7 @@ def define_schema(field, name):
                 schema_mode = 'NULLABLE'
             else:
                 field = types
-            
+
     if isinstance(field['type'], list):
         # if field['type'][0] == "null":
         if "null" in field['type']:
@@ -135,7 +135,7 @@ def persist_lines_job(project_id, dataset_id, lines=None):
             validate(msg.record, schema)
 
             dat = bytes(str(json.loads(json.dumps(msg.record), object_pairs_hook=clear_dict_hook)) + '\n', 'UTF-8')
-            
+
             rows[msg.stream].write(dat)
             #rows[msg.stream].write(bytes(str(msg.record) + '\n', 'UTF-8'))
 
@@ -146,7 +146,7 @@ def persist_lines_job(project_id, dataset_id, lines=None):
             state = msg.value
 
         elif isinstance(msg, singer.SchemaMessage):
-            table = msg.stream 
+            table = msg.stream
             schemas[table] = msg.schema
             key_properties[table] = msg.key_properties
             #tables[table] = bigquery.Table(dataset.table(table), schema=build_schema(schemas[table]))
@@ -186,10 +186,7 @@ def persist_lines_job(project_id, dataset_id, lines=None):
 
     return state
 
-def persist_lines_stream(config, lines=None):
-    project_id = config["project_id"]
-    dataset_id = config["dataset_id"]
-
+def persist_lines_stream(config, project_id, dataset_id, lines=None):
     state = None
     schemas = {}
     key_properties = {}
@@ -243,7 +240,7 @@ def persist_lines_stream(config, lines=None):
             state = msg.value
 
         elif isinstance(msg, singer.SchemaMessage):
-            table = msg.stream 
+            table = msg.stream
             schemas[table] = msg.schema
             key_properties[table] = msg.key_properties
             tables[table] = bigquery.Table(dataset.table(table), schema=build_schema(schemas[table]))
@@ -313,7 +310,7 @@ def main():
 
     input = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
 
-    state = persist_lines_stream(config['project_id'], config['dataset_id'], input) if config.get('stream_data', True) else persist_lines_job(config['project_id'], config['dataset_id'], input)
+    state = persist_lines_stream(config, config['project_id'], config['dataset_id'], input) if config.get('stream_data', True) else persist_lines_job(config['project_id'], config['dataset_id'], input)
     emit_state(state)
     logger.debug("Exiting normally")
 
