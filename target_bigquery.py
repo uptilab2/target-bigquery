@@ -268,9 +268,9 @@ def persist_lines_stream(config, project_id, dataset_id, lines=None):
 
     for table in errors.keys():
         if not errors[table]:
-            print('Loaded {} row(s) into {}:{}'.format(rows[table], dataset_id, table), tables[table].path)
+            print('Loaded {} row(s) into {}:{}'.format(rows[table], dataset_id, table), tables[table].path, file=sys.stderr)
         else:
-            print('Errors:', errors[table], sep=" ")
+            print('Errors:', errors[table], sep=" ", file=sys.stderr)
 
     return state
 
